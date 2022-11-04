@@ -1,6 +1,7 @@
 # 단어
 # permute 변환하다
 # lexicographical order 사전식 순서
+
 # 3가지 수정하기
 
 

@@ -1,5 +1,6 @@
 # 단어
 # evenly divides 나누어 떨어지게 하다
+
 # 수학 문제
 # tower의 개수가 짝수거나 tower의 높이가 1이면 player2가 이기고
 # 나머지는 player1이 이김
