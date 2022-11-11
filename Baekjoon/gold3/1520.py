@@ -1,3 +1,5 @@
+# (n-1,m-1) 위치에서 (0,0) 까지의 경우의 수를 역으로 채우는 방법 사용
+
 import sys
 sys.setrecursionlimit(10**6)
 input = sys.stdin.readline
@@ -10,7 +12,7 @@ def dfs(x,y):
     if visited[x][y] != -1:
         return visited[x][y]
 
-    cnt = 0
+    cnt = 0 # (x,y)에서 (n-1,m-1)까지 방법 경우의 수
     for i in range(4):
         nx,ny = x+dx[i], y+dy[i]
         if nx<0 or nx>=n or ny<0 or ny>=m: # 지도 밖이면 pass
