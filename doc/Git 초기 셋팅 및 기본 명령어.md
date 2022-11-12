@@ -72,7 +72,7 @@ git status
 ```
 #### git push
 - 저장소에 업로드 (commit된 것만 저장소에 저장됨)
-> -u 옵션은 앞으로 git push만 입력해도 origin main으로 연결하는 것
+> -u 옵션은 앞으로 git push만 입력해도 origin main으로 연결하는 것   
 > --force 강제로 다 업로드 시킬때
 ```bash
 git push repository_name branch_name # 기본 템플릿
