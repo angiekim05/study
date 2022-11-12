@@ -1,8 +1,8 @@
 # Git | 초기 셋팅 & 기본 명령어
-1. [Git Repository 생성 및 초기 셋팅](#1-git-repository-생성-및-초기-셋팅)
-2. [Git 기본 명령어 (add, commit, push, pull)](#2-git-기본-명령어-add-commit-push-pull)
-3. [기타 명령어 (diff, log, reset, revert)](#3-기타-명령어-diff-log-reset-revert)
-4. [Git bash 기본 명령어](#4-git-bash-기본-명령어)
+1. [Git Repository 생성 및 초기 셋팅](#1-git-repository-생성-및-초기-셋팅-top)
+2. [Git 기본 명령어 (add, commit, push, pull)](#2-git-기본-명령어-add-commit-push-pull-top)
+3. [기타 명령어 (diff, log, reset, revert)](#3-기타-명령어-diff-log-reset-revert-top)
+4. [Git bash 기본 명령어](#4-git-bash-기본-명령어-top)
 
 ## 1. Git Repository 생성 및 초기 셋팅 [Top](#)
 ### Git 초기 셋팅
