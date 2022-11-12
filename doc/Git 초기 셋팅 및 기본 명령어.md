@@ -1,10 +1,12 @@
 # Git | 초기 셋팅 & 기본 명령어
 1. [Git Repository 생성 및 초기 셋팅](#1-git-repository-생성-및-초기-셋팅)
 2. [Git 기본 명령어 (add, commit, push, pull)](#2-git-기본-명령어-add-commit-push-pull)
+3. [기타 명령어 (diff, log, reset, revert)](#3-기타-명령어-diff-log-reset-revert)
+4. [Git bash 기본 명령어](#4-git-bash-기본-명령어)
 
-## 1. Git Repository 생성 및 초기 셋팅
+## 1. Git Repository 생성 및 초기 셋팅 [Top](#)
 ### Git 초기 셋팅
-- git 설치 [git download](https://git-scm.com/downloads)
+- git 설치 [download](https://git-scm.com/downloads)
 - 버전 확인
 ```bash
 git --version
@@ -51,7 +53,7 @@ git checkout branch_name
 git checkout -b new_branch_name
 ```
     
-## 2. Git 기본 명령어 (add, commit, push, pull)
+## 2. Git 기본 명령어 (add, commit, push, pull) [Top](#)
 #### git add
 - 파일 추가
 ```bash
@@ -87,7 +89,7 @@ git pull -u origin main
 git pull
 ```
     
-## 3. 기타 명령어 (diff, log, reset, revert)
+## 3. 기타 명령어 (diff, log, reset, revert) [Top](#)
 #### git diff
 - 워킹 디렉토리와 git 저장소 사이 다른 commit 비교
 ```bash
@@ -120,7 +122,7 @@ git revert --soft HEAD^    # add한 상태 (staged)
 git revert --mixed HEAD^   # add하기전 상태 (unstaged)
 ```
     
-## 4. Git bash 기본 명령어
+## 4. Git bash 기본 명령어 [Top](#)
 -    화면 초기화 : Ctrl + L
 -    한 행의 처음과 끝 : Ctrl + A, Ctrl + E
 -    목록 보기 : ls 또는 dir
@@ -129,5 +131,6 @@ git revert --mixed HEAD^   # add하기전 상태 (unstaged)
 -    디렉터리로 이동 : cd
 -    디렉터리 생성 : mkdir
 -    파일 삭제 : rm
--    파일 생성 : touch
+-    파일 생성 : touch   
+
 [git bash 기본 명령어 출처](https://gbsb.tistory.com/10)
