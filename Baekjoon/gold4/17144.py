@@ -19,10 +19,9 @@
 # T초 후 미세먼지의 총 양
 
 import sys
-from collections import deque
 
 def diffusion(array,r,c): # loc1,loc2는 공기청정기 위치
-    diffused = [deque([0]*c) for _ in range(r)] # 확산 후 array
+    diffused = [[0]*c for _ in range(r)] # 확산 후 array
     for x in range(r):
         for y in range(c):
             if array[x][y] > 0: # 미세먼지가 있으면
@@ -38,6 +37,7 @@ def diffusion(array,r,c): # loc1,loc2는 공기청정기 위치
                         diffused[x][y] -= k # 확산된 만큼 빼주기
     return diffused
 
+# 두번째 시도 (하나씩 방문 버전) -> deque를 사용하지 않고 위치 교환만 -> 위치교환은 그냥 리스트가 빠름
 def airCleaner(array,r,c,cleaner):
     # 반시계방향 + 시계방향
     # 순차적으로 한칸씩 이동할 것
@@ -70,8 +70,9 @@ input = sys.stdin.readline
 r,c,t = map(int,input().split())
 array = []
 cleaner = []
+# 공기청정기 위치 확인
 for i in range(r):
-    temp = deque(map(int,input().split()))
+    temp = list(map(int,input().split()))
     if temp[0] == -1:
         cleaner.append(i)
     array.append(temp)
@@ -80,8 +81,48 @@ for _ in range(t):
     array = diffusion(array,r,c)
     array = airCleaner(array,r,c,cleaner)
 
+# 미세먼지 총량 계산
 answer = 0
 for i in range(r):
     answer += sum(array[i])
 
 print(answer)
+
+
+# cleaner 첫 시도
+# deque 사용
+from collections import deque
+def airCleaner(array,r,c,cleaner):
+    # 세로 이동
+    store = [array[1][-1],array[-2][-1]] # 밀려나서 오른쪽으로 들어오는 변수 저장
+    temp = array[0][0] # 처음 아래로 내려갈 값
+    for i in range(1, cleaner[0]):
+        array[i][0], temp = temp, array[i][0] # 임시 담아놓은 미세먼지가 아래로
+        array[i][-1] = array[i+1][-1] # 아래에 있는 미세먼지가 위로 이동
+    temp = array[cleaner[1]][-1]
+    for i in range(cleaner[1]+1, r-1):
+        array[i][-1], temp = temp, array[i][-1] # 아래로 이동
+        array[i][0] = array[i+1][0] # 위로 이동
+    
+    # 가로 이동
+    # 맨 윗줄
+    up = array[0]
+    up.popleft()
+    up.append(store[0])
+    array[0] = up 
+    # 맨 아랫줄
+    down = array[-1]
+    down.popleft()
+    down.append(store[1])
+    array[-1] = down
+    # 중앙위쪽
+    mid1 = array[cleaner[0]]
+    mid1.pop()
+    mid1.popleft()
+    array[cleaner[0]] = deque([0,0])+mid1 
+    # 중앙아래쪽
+    mid2 = array[cleaner[1]]
+    mid2.pop()
+    mid2.popleft()
+    array[cleaner[1]] = deque([0,0])+mid2
+    return array
