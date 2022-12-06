@@ -1,30 +1,55 @@
+# 누적합 활용
+# 1. SKK를 만들기 위해 필요한 K 개수를 담는 nk에 
+#    S가 나오면 +2 K가 나오면 -1해서 담는다
+# 2. s에는 S의 누적합을 담고, k에는 K의 누적합 담는다
+# 3. 필요한 k개수가 동일하면 그 사이에 SKK가 존재한다는 뜻이며, 
+#    길이는 '현재 인덱스' - '동일한 k필요개수의 최소 인덱스'가 된다
+#    예를 들어,
+#    KKSKSSKKK 가 있다면, nk(k필요개수)에는 [-1,-2,0,-1,1,3,2,1,0]이 담긴다
+#    0번째와 3번째에 -1이 존재하며, 1~3은 SKK문자열이 된고 SKK문자열의 길이는 3-0 인 3이 된다
+#    2번째와 8번째에 0이 존재하며 3~8은 SKK문자열이고 길이는 8-2 = 6이다
+#    4번째와 7번째에 1이 존재하며 5~7 또한 SKK문자열이고 길이는 7-4 = 3이다
+#    셋 중 가장 긴 SKK문자열의 길이는 6이 된다
+
 string = input()
 n = len(string)
-dp = [[0,0] for _ in range(n+1)]
-sk = []
-for i in range(n):
-    dp[i+1][0] += dp[i][0]
-    dp[i+1][1] += dp[i][1]
-    if string[i] == "S":
-        dp[i+1][0] += 1
-        sk.append((i,"s"))
-    elif string[i] == "K":
-        dp[i+1][1] += 1
-        sk.append((i,"k"))
-print(sk)
-print(dp)
-answer = 0
-if dp[-1][0] + dp[-1][1] < 3:
-    print(-1)
-else:
-    i, j = 0, n
-    while i < j:
-        # while k and dp[j][1] % 2 == 1:
-        #     j = k.pop() + 1
-        print(i,j)
+#k 필요 개수, s 개수, k 개수
+nk = [0]*(n+1)
+s = [0]*(n+1)
+k = [0]*(n+1)
+# 특정 k 필요 개수의 최소 인덱스를 담는 딕셔너리 생성 
+# 초기 S,K 둘다 없어서 K 필요 개수가 0인 상태
+min_idx = {0:0}
+def sol():
+    ans = -1
+    for i in range(1,n+1):
+        # 누적합
+        nk[i] = nk[i-1]
+        s[i] = s[i-1]
+        k[i] = k[i-1]
+        if string[i-1] == "S":
+            nk[i] += 2
+            s[i] += 1
+        elif string[i-1] == "K":
+            nk[i] -= 1
+            k[i] += 1
+        
+        # 만약 K가 필요한 개수에 대한 최소 idx가 없다면
+        # 현재 idx가 최소임으로 추가해준다
+        if nk[i] not in min_idx:
+            min_idx[nk[i]] = i
 
-        if (dp[j][0]-dp[i][0]) * 2 == dp[j][1]-dp[i][1] != 0:
-            answer = max(answer,j-i)
-            break
-        j -= 1
-    print(answer)
+        # K가 필요한 개수가 동일한 경우가 나왔다면 
+        # SKK문자열이 존재한다는 것을 의미함으로
+        # 길이 = '현재 인덱스' - '동일한 k필요개수의 최소 인덱스' 를 통해
+        # 가장 긴 길이로 ans를 업데이트 한다
+        # 이 때, 초기 K가 필요한 개수가 0인 것도 포함되기 때문에
+        # S나 K가 존재하기 전에도 계산이 됨으로
+        # 해당 경우가 포함되지 않도록 s와 k의 개수가 0이상인 경우로 제한해준다
+        else:
+            idx = min_idx[nk[i]]
+            if 0 < s[i] - s[idx] and 0 < k[i] - k[idx]:
+                ans = max(ans,i - min_idx[nk[i]])
+    return ans
+
+print(sol())
