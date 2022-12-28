@@ -66,5 +66,5 @@ def fibo(x):
 ``` 
    
 ### DP 관련 응용 문제
-- 백준 [2011번](https://www.acmicpc.net/problem/2011)
-- 백준 [11049번](https://www.acmicpc.net/problem/11049)
+- 백준 [2011번](https://www.acmicpc.net/problem/2011) [풀이](../Baekjoon/gold5/2011.py)
+- 백준 [11049번](https://www.acmicpc.net/problem/11049) [풀이](../Baekjoon/gold3/11049.py)
