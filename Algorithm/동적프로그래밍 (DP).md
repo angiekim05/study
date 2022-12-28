@@ -65,6 +65,6 @@ def fibo(x):
     return memo[x]
 ``` 
    
-### DP 관련 문제
-백준 [2011번](https://www.acmicpc.net/problem/2011)
-백준 [11049번](https://www.acmicpc.net/problem/11049)
+### DP 관련 응용 문제
+- 백준 [2011번](https://www.acmicpc.net/problem/2011)
+- 백준 [11049번](https://www.acmicpc.net/problem/11049)
