@@ -6,33 +6,33 @@ import math
 class ScaleDotProductAttention(nn.Module):
     def __init__(self):
         super().__init__()
-        self.softmax = nn.Softmax(dim=-1) # dim = -1 은 단어들에 해당하는 위치 ([batch_size, head, seq_len, seq_len])
+        self.softmax = nn.Softmax(dim=-1)
         
     def forward(self, q, k, v, mask=None):
-        # q,k,v 의 크기는 같음 
-        # [batch_size, head, seq_len, head_dim]
+        # scaling에 필요한 head_dim 값 얻기
+        # (batch_size, head, seq_len, head_dim)
         _, _, _, head_dim = q.size()
 
-        # 1. K를 transpose하기 (seq_len, head_dim의 위치 전환)
+        # 1. K를 transpose하기 (seq_len, head_dim의 행렬 전환)
         k_t = k.transpose(-1,-2)
 
         # 2. Q 와 K^T 의 MatMul
+        # (batch_size, head, q_seq_len, k_seq_len)
         attention_score = torch.matmul(q,k_t)
-        # attention_score: [batch_size, head, q_seq_len, k_seq_len] 
 
-        # 3. scale(1/sqrt(d_k == head_dim)) 곱하기
+        # 3. Scaling
         attention_score /= math.sqrt(head_dim)
 
         # 4. Mask가 있다면 마스킹된 부위 -1e10으로 채우기
-        # mask 가 단어가 있는 곳(True), 마스킹된 곳(False) 으로 표시되었기 때문에
-        # False(0)에 해당되는 부분을 masking out함
+        # mask는 단어가 있는 곳(True), 마스킹된 곳(False)으로 표시되었기 때문에 False(0)에 해당되는 부분을 -1e10으로 masking out한다.
+        # Tensor.masked_fill_(mask_boolean, value) 함수는 True값을 value로 채운다.
         if mask is not None:
-            attention_score = attention_score.masked_fill(mask==0,-1e10) # Tensor.masked_fill_(mask_boolean, value)
+            attention_score = attention_score.masked_fill(mask==0,-1e10) 
         
-        # 5. softmax 취하기 
+        # 5. Softmax 취하기 
         attention_score = self.softmax(attention_score)
 
-        # 6. attention 결과값과 V MatMul 계산하기
+        # 6. Attention 결과와 V의 MatMul 계산하기
         result = torch.matmul(attention_score, v)
         
         return result, attention_score
