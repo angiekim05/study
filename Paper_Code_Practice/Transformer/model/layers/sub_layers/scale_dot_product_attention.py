@@ -1,5 +1,7 @@
 import torch
-import torch.nn as nn
+from torch import nn
+
+import math
 
 class ScaleDotProductAttention(nn.Module):
     def __init__(self):
@@ -8,21 +10,23 @@ class ScaleDotProductAttention(nn.Module):
         
     def forward(self, q, k, v, mask=None):
         # q,k,v 의 크기는 같음 
-        # [batch_size, head, seq_len, head_dim(기존 d_model을 head 수로 나눈 각 head의 dim)]
-        batch_size, head, seq_len, head_dim = q.size()
+        # [batch_size, head, seq_len, head_dim]
+        _, _, _, head_dim = q.size()
 
         # 1. K를 transpose하기 (seq_len, head_dim의 위치 전환)
         k_t = k.transpose(-1,-2)
 
         # 2. Q 와 K^T 의 MatMul
         attention_score = torch.matmul(q,k_t)
-        # attention_score: [batch_size, head, seq_len, seq_len]
+        # attention_score: [batch_size, head, q_seq_len, k_seq_len] 
 
         # 3. scale(1/sqrt(d_k == head_dim)) 곱하기
-        attention_score /= torch.sqrt(torch.Tensor([head_dim]))
+        attention_score /= math.sqrt(head_dim)
 
-        # 4. Mask가 있다면 해당 부위 -1e10으로 채우기
-        if mask:
+        # 4. Mask가 있다면 마스킹된 부위 -1e10으로 채우기
+        # mask 가 단어가 있는 곳(True), 마스킹된 곳(False) 으로 표시되었기 때문에
+        # False(0)에 해당되는 부분을 masking out함
+        if mask is not None:
             attention_score = attention_score.masked_fill(mask==0,-1e10) # Tensor.masked_fill_(mask_boolean, value)
         
         # 5. softmax 취하기 

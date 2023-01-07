@@ -4,6 +4,7 @@ class PositionWiseFCFeedForwardNetwork(nn.Module):
     def __init__(self,d_model,d_ff):
         super().__init__()
         self.w_1 = nn.Linear(d_model,d_ff)
+        self.relu = nn.ReLU()
         self.w_2 = nn.Linear(d_ff,d_model)
     
     def forward(self, x):
@@ -11,7 +12,7 @@ class PositionWiseFCFeedForwardNetwork(nn.Module):
         x = self.w_1(x)
 
         # ReLU
-        x = nn.ReLU(x)
+        x = self.relu(x)
         
         # Linear Layer2
         x = self.w_2(x)
