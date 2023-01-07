@@ -6,12 +6,12 @@
 3. [Position-Wise Fully Connected Feed-Forward Network](#3-position-wise-fully-connected-feed-forward-network)
 
 ## 1. Multi-Head Attention
-<p style="text-align: center;"><img src="../../../src/multi_head_attention.png" height="250"></p>
+<p align="center"><img src="../../../src/multi_head_attention.png" height="250"></p>
 
 - Multi-Head 이름은 입력된 Q,K,V 행렬을 Head의 수만큼 나누었기 때문에 붙여졌다.
 - 논문에서는 Query, Key, Value 단일 Attention Function을 쓰기보다 Q, K, V를 각각 $d_k, d_k, d_v$ 차원으로 projection하여 Head의 수만큼 $h$ 번 병렬 학습시키는 방법을 선택하였다.
 - 여기서 Head를 나눈다는 것은 아래 그림처럼 $d_{model}$ 차원을 h개로 분리한다는 것이다.
-<p style="text-align: center;"><img src="../../../src/head.png" height="200"></p>
+<p align="center"><img src="../../../src/head.png" height="200"></p>
 
 ### 1.1. 함수
 - 논문에서 주어진 함수는 다음과 같다.   
@@ -74,7 +74,7 @@ class MultiHeadAttention(nn.Module):
 ```
 
 ## 2. Scaled Dot-Product Attention
-<p style="text-align: center;"><img src="../../../src/scaled_dot_product_attention.png" height="250"></p>
+<p align="center"><img src="../../../src/scaled_dot_product_attention.png" height="250"></p>
 
 - Scaled Dot-Product 이름은 attention 내에서 Dot-Production 즉, 내적이 사용되고 Scale 비율이 조정되기 때문에 붙여졌다.
 - 여기서 MatMul(matrix multiple)은 두 개의 행렬에 대하여 내적을 계산하는 함수이다.
@@ -137,7 +137,7 @@ class ScaleDotProductAttention(nn.Module):
 ```
 
 ## 3. Position-Wise Fully Connected Feed-Forward Network
-<p style="text-align: center;"><img src="../../../src/ffn.png" height="250"></p>
+<p align="center"><img src="../../../src/ffn.png" height="250"></p>
 
 - 그림처럼 Fully connected feed-forward network가 단어 즉, 각 단어의 위치마다 적용되기 때문에 position-wise라고 표현된 것이다.
 
