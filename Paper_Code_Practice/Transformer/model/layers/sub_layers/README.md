@@ -1,6 +1,8 @@
 # Sub Layers
 - Encoder와 Decoder를 구성하는 Sub Layer로는 Multi-Head Attention과 Position-Wise Fully Connected Feed-Forward Network가 있다.   
-- 여기서는 Multi-Head Attention가 Scaled Dot-Product Attention을 포함함으로 총 3가지 class를 만들었다.   
+- Multi-Head Attention가 내포하는 Scaled Dot-Product Attention까지 총 3가지의 Sub Layer class를 구현하였다.  
+
+### [목차]
 1. [Multi-Head Attention](#1-multi-head-attention)
 2. [Scaled Dot-Product Attention](#2-scaled-dot-product-attention)
 3. [Position-Wise Fully Connected Feed-Forward Network](#3-position-wise-fully-connected-feed-forward-network)
@@ -10,13 +12,13 @@
 
 - Multi-Head 이름은 입력된 Q,K,V 행렬을 Head의 수만큼 나누었기 때문에 붙여졌다.
 - 논문에서는 Query, Key, Value 단일 Attention Function을 쓰기보다 Q, K, V를 각각 $d_k, d_k, d_v$ 차원으로 projection하여 Head의 수만큼 $h$ 번 병렬 학습시키는 방법을 선택하였다.
-- 여기서 Head를 나눈다는 것은 아래 그림처럼 $d_{model}$ 차원을 h개로 분리한다는 것이다.
+- 여기서 Head를 나눈다는 것은 아래 그림처럼 $d_{model}$ 차원을 $h$ 개로 분리한다는 것이다.
 <p align="center"><img src="../../../src/head.png" height="200"></p>
 
 ### 1.1. 함수
 - 논문에서 주어진 함수는 다음과 같다.   
-> $MultiHead (Q, K, V) = Concat(head_1, ..., head_h)W^O,$    
-> $where$  $head_i = Attention(QW^Q_i, KW^K_i, VW^V_i)$    
+    > $MultiHead (Q, K, V) = Concat(head_1, ..., head_h)W^O,$    
+    > $where$  $head_i = Attention(QW^Q_i, KW^K_i, VW^V_i)$    
 
 - 논문에서는 $d_{model} = 512,  h = 8,  d_k = d_v = \frac{d_{model}}{h} = 64$ 을 사용하였다.
 
@@ -83,7 +85,7 @@ class MultiHeadAttention(nn.Module):
 
 ### 2.1. 함수
 - 논문에서 주어진 함수는 다음과 같다.   
-> $Attention(Q,K,V) = softmax(\frac{QK^T}{\sqrt d_k})V$    
+    > $Attention(Q,K,V) = softmax(\frac{QK^T}{\sqrt d_k})V$    
 
 - Q,K,V 의 shape은 (batch_size, head, seq_len, head_dim) 이다.
 
@@ -143,7 +145,7 @@ class ScaleDotProductAttention(nn.Module):
 
 ### 3.1. 함수
 - 논문에서 주어진 함수는 다음과 같다.    
-> $FFN(x) = max(0, xW_1+b_1)W_2 + b_2$    
+    > $FFN(x) = max(0, xW_1+b_1)W_2 + b_2$    
 - 논문에서 $d_{model}=512, d_{ff} = 2048$을 사용한다.
 - 함수에서 $max(0,X)$ 는 ReLU 활성함수 사용을 의미하며,
 - $xW+b$ 는 Linear Layer (fc layer)를 통과하는 것을 의미한다.
