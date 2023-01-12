@@ -1,11 +1,11 @@
 # Embedding
-<div align="center"><img src="../../../src/emb.png" style="max-height: 100px; height:auto; width:auto;"></div>
+<div align="center"><img src="../../../src/emb.png" style="max-width: 400px; height:auto; width:auto;"></div>
 
 - Transformer에서 사용되는 Embedding은 Input Embedding과 Output Embedding이 있으며, 이들과 더해지는 Positional Encoding이 있다.
 - Input과 Output Embedding은 torch에서 제공하는 nn.Embedding을 사용하였으며, Positional Encoding은 논문에서 제시하는 수식을 따라 Positional Encoding class를 구현하였다. 
 
 ## 1. Positional Encoding
-<p align="center"><img src="../../../src/pe.png" style="max-height: 400px; height:auto; width:auto;"></p>
+<p align="center"><img src="../../../src/pe.png" style="max-width: 800px; height:auto; width:auto;"></p>
 
 - Positional Encoding은 **시퀀스의 순서(단어의 위치 정보)**를 알려주는 역할을 한다.
 - Input과 Output Embedding이 입력될 때 Positional Encoding 정보가 더해져 Encoder와 Decoder에 들어감으로 Embedding과 같은 shape (batch_size, seq_len, $d_{model}$)을 갖는다.
