@@ -13,7 +13,7 @@
 - Multi-Head 이름은 입력된 Q,K,V 행렬을 Head의 수만큼 나누었기 때문에 붙여졌다.
 - 논문에서는 Query, Key, Value 단일 Attention Function을 쓰기보다 Q, K, V를 각각 $d_k, d_k, d_v$ 차원으로 projection하여 Head의 수만큼 $h$ 번 병렬 학습시키는 방법을 선택하였다.
 - 여기서 Head를 나눈다는 것은 아래 그림처럼 $d_{model}$ 차원을 $h$ 개로 분리한다는 것이다.
-<p align="center"><img src="../../../src/head.png" height="200"></p>
+<p align="center"><img src="../../../src/head.png" height="400"></p>
 
 ### 1.1. 함수
 - 논문에서 주어진 함수는 다음과 같다.   
