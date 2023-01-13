@@ -15,20 +15,23 @@ class EncoderLayer(nn.Module):
         self.dropout = nn.Dropout(p=dropout)
 
     def forward(self, x, padding_mask):
-        # 1. multi-head attention
-        residual = x  # residual connection을 위해 잠시 담아둠
+        # residual connection을 위해 잠시 담아둔다.
+        residual = x
+        
+        # 1. multi-head attention (self attention)
         x, attention_score = self.attention(q=x, k=x, v=x, mask=padding_mask) 
         
         # 2. add & norm
         x = self.dropout(x) + residual
         x = self.layerNorm1(x)
 
-        # 3. position-wise fc feed-forward network
         residual = x
+
+        # 3. feed-forward network
         x = self.ffn(x)
 
         # 5. add & norm
         x = self.dropout(x) + residual
         x = self.layerNorm2(x)
 
-        return x, attention_score 
+        return x, attention_score
