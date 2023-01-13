@@ -1,7 +1,7 @@
 # Layers
 <p align="center">
-    <img src="../../../src/encoder_layer" height="175">
-    <img src="../../../src/decoder_layer.png" height="250">
+    <img src="../../src/encoder_layer" height="175">
+    <img src="../../src/decoder_layer.png" height="250">
 </p>
 
 - 먼저 구현한 Sub Layers와 PyTorch에서 제공하는 LayerNorm 함수를 활용하여 Encoder Layer와 Decoder Layer의 class를 구현하였다.
@@ -13,7 +13,7 @@
 
 ## 1. Encoder Layer
 <p align="center">
-    <img src="../../../src/encoder_layer_comment.png" height="175">
+    <img src="../../src/encoder_layer_comment.png" height="175">
 </p>
 
 - Encoder Layer에서는 multi-head self-attention layer와 position-wise fully connected feed-forward network layer가 사용되었다.
@@ -25,7 +25,7 @@
     - self-attention에 해당한다. 
     - Encoder의 self-attention layer에서는 key, value, query가 같은 input(이전 layer의 output)에서 오기 때문에, 모든 단어의 위치에 대한 attention 정보를 담은 attention score를 얻을 수 있다.
     - 추가적으로 패딩 토큰에 대하여 학습하지 않도록 아래 그림과 같은 패딩 마스크를 사용한다.
-<p align="center"><img src="../../../src/mask_padding.png" height="175"></p>
+<p align="center"><img src="../../src/mask_padding.png" height="175"></p>
 
 2. add & norm
     > $LayerNorm(x + Sublayer(x))$
@@ -75,7 +75,7 @@ class EncoderLayer(nn.Module):
 
 ## 2. Decoder Layer
 <p align="center">
-    <img src="../../../src/decoder_layer_comment.png" height="250">
+    <img src="../../src/decoder_layer_comment.png" height="250">
 </p>
 
 - Decoder Layer에서는 multi-head self-attention layer와 multi-head encoder-decoder attention layer, position-wise fully connected feed-forward network layer가 사용되었다.
@@ -88,7 +88,7 @@ class EncoderLayer(nn.Module):
     - 하지만 padding mask 대신에 오른쪽 방향으로의 정보 흐름을 유지하는 auto-regressive(자기회귀)한 특성을 위해 **look-ahead mask** 사용한다.
     - look-ahead mask는 $pos$ 번째 위치에 있는 단어의 attention 정보를 얻을 때, $pos$ 번째보다 이후에 있는 단어들을 참고하지 못하도록 하는 마스크이다.
     - 이때 입력되는 look-ahead mask에는 padding mask 정보도 포함된다.
-<p align="center"><img src="../../../src/mask_look_ahead.png" height="175"></p> 
+<p align="center"><img src="../../src/mask_look_ahead.png" height="175"></p> 
 
 2. add & norm
 3. multi-head attention
@@ -96,8 +96,8 @@ class EncoderLayer(nn.Module):
     - 이때, query는 decoder에서 올라오고, key, value는 encoder에서 넘어온 값을 사용한다. 따라서 encoder의 모든 단어의 정보가 decoder 단어에 대한 attention 정보에 영향을 미치게 된다.
     - 여기서도 패딩 토큰을 학습하지 않도록 패딩 마스크를 사용한다. 단, encoder-decoder attention인 만큼 input과 output의 패딩 토큰이 있는 곳은 모두 마스킹된다.
     <p align="center">
-    <img src="../../../src/attention_encoder_decoder.png" height="175"> <br>
-    <img src="../../../src/attention_key.png" height="175">
+    <img src="../../src/attention_encoder_decoder.png" height="175"> <br>
+    <img src="../../src/attention_key.png" height="175">
     </p> 
 4. add & norm
 5. position-wise fc feed-forward network
