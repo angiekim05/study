@@ -1,4 +1,4 @@
-from data.dataset_setup import *
+from dataset.dataset_setup import *
 from config import *
 
 from torchtext.vocab import build_vocab_from_iterator

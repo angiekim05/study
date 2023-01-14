@@ -1,4 +1,4 @@
 git clone https://github.com/j-min/korean-parallel-corpora.git
-tar -zxvf ./korean-parallel-corpora/korean-english-news-v1/korean-english-park.train.tar.gz -C ./data/dataset
-tar -zxvf ./korean-parallel-corpora/korean-english-news-v1/korean-english-park.test.tar.gz -C ./data/dataset
-tar -zxvf ./korean-parallel-corpora/korean-english-news-v1/korean-english-park.dev.tar.gz -C ./data/dataset
+tar -zxvf ./korean-parallel-corpora/korean-english-news-v1/korean-english-park.train.tar.gz -C ./dataset/dataset
+tar -zxvf ./korean-parallel-corpora/korean-english-news-v1/korean-english-park.test.tar.gz -C ./dataset/dataset
+tar -zxvf ./korean-parallel-corpora/korean-english-news-v1/korean-english-park.dev.tar.gz -C ./dataset/dataset
