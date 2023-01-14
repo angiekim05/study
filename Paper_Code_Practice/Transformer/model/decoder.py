@@ -12,7 +12,7 @@ class Decoder(nn.Module):
         self.pos_encoding = PositionalEncoding(d_model, max_len, device)
         self.dropout = nn.Dropout(p=dropout)
 
-        # n 개의 decoder layer
+        # Add DecoderLayers to the list
         self.decoder_layers = nn.ModuleList([DecoderLayer(d_model=d_model, 
                                                          head=head, 
                                                          d_ff=d_ff, 
@@ -20,15 +20,18 @@ class Decoder(nn.Module):
                                              for _ in range(n_layers)])
 
     def forward(self, x, memory, look_ahead_mask, padding_mask):
-        # 1. output embedding, positional encoding 
-        output_emb = self.output_emb(x) # [batch_size, seq_len, d_model]
-        pos_encoding = self.pos_encoding(x) # [seq_len, d_model]
+        # 1. make input embedding, positional encoding
+        # (batch_size, seq_len, d_model)
+        output_emb = self.output_emb(x) 
+        # (seq_len, d_model)
+        pos_encoding = self.pos_encoding(x) 
         
         # 2. add & dropout
-        x = self.dropout(output_emb + pos_encoding) # [batch_size, seq_len, d_model]
+        # (batch_size, seq_len, d_model)
+        x = self.dropout(output_emb + pos_encoding) 
 
-        # 3. n 번 DecoderLayer 반복하기
+        # 3. Repeat DecoderLayer n times
         for decoder_layer in self.decoder_layers:
             x = decoder_layer(x, memory, look_ahead_mask, padding_mask)
-        
+
         return x
