@@ -8,12 +8,12 @@ from torch.utils.data import DataLoader
 
 # train,test,valid = 76125,1603,792
 # 한국어 tokenization은 110초 내외
-train_idx, train_src = tokenize_ko_sen("data/dataset/korean-english-park.train.ko") # max token length = 129
-valid_idx, valid_src = tokenize_ko_sen("data/dataset/korean-english-park.dev.ko") # max token length = 90
-test_idx, test_src = tokenize_ko_sen("data/dataset/korean-english-park.test.ko") # max token length = 107
-train_tgt = tokenize_en_sen("data/dataset/korean-english-park.train.en", train_idx) # max token length = 96
-valid_tgt = tokenize_en_sen("data/dataset/korean-english-park.dev.en", valid_idx) # max token length = 71
-test_tgt = tokenize_en_sen("data/dataset/korean-english-park.test.en", test_idx) # max token length = 74
+train_idx, train_src = tokenize_ko_sen("dataset/dataset/korean-english-park.train.ko") # max token length = 129
+valid_idx, valid_src = tokenize_ko_sen("dataset/dataset/korean-english-park.dev.ko") # max token length = 90
+test_idx, test_src = tokenize_ko_sen("dataset/dataset/korean-english-park.test.ko") # max token length = 107
+train_tgt = tokenize_en_sen("dataset/dataset/korean-english-park.train.en", train_idx) # max token length = 96
+valid_tgt = tokenize_en_sen("dataset/dataset/korean-english-park.dev.en", valid_idx) # max token length = 71
+test_tgt = tokenize_en_sen("dataset/dataset/korean-english-park.test.en", test_idx) # max token length = 74
 
 # ko vocab: 35857 
 # en vocab: 42217
@@ -55,3 +55,5 @@ valid_loader = DataLoader(dataset=valid_dataset,
 test_loader = DataLoader(dataset=test_dataset,
                          batch_sampler=test_sampler,
                          collate_fn=collate_fn)
+
+print("datasets are loaded")
