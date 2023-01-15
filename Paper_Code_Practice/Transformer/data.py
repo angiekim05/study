@@ -6,8 +6,10 @@ from torchtext.vocab import build_vocab_from_iterator
 from util.data_util import *
 from torch.utils.data import DataLoader
 
+import time
+start_time = time.time()
+print("Data preprocessing...")
 # train,test,valid = 76125,1603,792
-# 한국어 tokenization은 110초 내외
 train_idx, train_src = tokenize_ko_sen("dataset/dataset/korean-english-park.train.ko") # max token length = 129
 valid_idx, valid_src = tokenize_ko_sen("dataset/dataset/korean-english-park.dev.ko") # max token length = 90
 test_idx, test_src = tokenize_ko_sen("dataset/dataset/korean-english-park.test.ko") # max token length = 107
@@ -56,4 +58,6 @@ test_loader = DataLoader(dataset=test_dataset,
                          batch_sampler=test_sampler,
                          collate_fn=collate_fn)
 
-print("datasets are loaded")
+end_time = time.time()
+mins, secs = divmod(end_time-start_time,60)
+print(f"All data is ready. Time: {int(mins)}m {secs:.2f}s")

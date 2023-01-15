@@ -8,6 +8,8 @@ from data import *
 from model.transformer import Transformer
 from util.scheduler import LRScheduler
 
+from tqdm import tqdm
+
 n_input_vocab = len(vocab_ko)
 n_output_vocab = len(vocab_en)
 
@@ -44,25 +46,28 @@ def train(model, data_source, optimizer, criterion):
     model.train() # train mode
     epoch_loss = 0
     n_batch = len(data_source)
-    for i, batch in enumerate(data_source):
-        src = batch[0].to(device)
-        tgt = batch[1].to(device)
+    with tqdm(data_source, unit="batch") as epoch:
+        for i, batch in enumerate(epoch):
+            epoch.set_description(f"Epoch {i}")
 
-        optimizer.zero_grad()
-        output = model(src,tgt[:,:-1])
-        output_reshape = output.contiguous().view(-1,output.size(-1)) # (-1,vocab_size)
-        tgt = tgt[:,1:].contiguous().view(-1)
+            src = batch[0].to(device)
+            tgt = batch[1].to(device)
 
-        loss = criterion(output_reshape,tgt)
-        loss.backward()
-        torch.nn.utils.clip_grad_norm_(model.parameters(), clip) # parameter exploding 방지
-        optimizer.step()
+            optimizer.zero_grad()
+            output = model(src,tgt[:,:-1])
+            output_reshape = output.contiguous().view(-1,output.size(-1)) # (-1,vocab_size)
+            tgt = tgt[:,1:].contiguous().view(-1)
 
-        epoch_loss += loss.item()
+            loss = criterion(output_reshape,tgt)
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), clip) # parameter exploding 방지
+            optimizer.step()
 
-        if i % log_interval == 0 and i > 0: # 0 이상의 interval 간격마다 loss 값 찍기
-            print('| step : {:3.1f} % | train_loss : {:5.5f} |'.format(i/n_batch*100, loss.item()))
-    
+            epoch_loss += loss.item()
+
+            if i % log_interval == 0 and i > 0: # 0 이상의 interval 간격마다 loss 값 찍기
+                print('| step : {:3.1f} % | train_loss : {:5.5f} |'.format(i/n_batch*100, loss.item()))
+        
     return epoch_loss / n_batch
 
 def evaluate(model, data_source, criterion):
@@ -71,23 +76,25 @@ def evaluate(model, data_source, criterion):
     epoch_bleu = 0
     n_batch = len(data_source)
     with torch.no_grad():
-        for i, batch in enumerate(data_source):
-            src = batch[0].to(device)
-            tgt = batch[1].to(device)
+        with tqdm(data_source, unit="batch") as epoch:
+            for i, batch in enumerate(epoch):
+                epoch.set_description(f"Epoch {i}")
+                src = batch[0].to(device)
+                tgt = batch[1].to(device)
 
-            output = model(src,tgt[:,:-1])
-            output_reshape = output.contiguous().view(-1,output.size(-1)) # (-1,vocab_size)
-            tgt_reshape = tgt[:,1:].contiguous().view(-1)
+                output = model(src,tgt[:,:-1])
+                output_reshape = output.contiguous().view(-1,output.size(-1)) # (-1,vocab_size)
+                tgt_reshape = tgt[:,1:].contiguous().view(-1)
 
-            loss = criterion(output_reshape,tgt_reshape)
-            epoch_loss += loss.item()
+                loss = criterion(output_reshape,tgt_reshape)
+                epoch_loss += loss.item()
 
-            output_words = output.max(dim=-1)[1] # vocab 중 max 값의 index 가져오기
-            output_words = decode(output_words,en_itos)
-            tgt_words = decode(tgt,en_itos)
-            bleu = corpus_bleu(list_of_references=tgt_words, 
-                               hypotheses=output_words)
-            epoch_bleu += bleu
+                output_words = output.max(dim=-1)[1] # vocab 중 max 값의 index 가져오기
+                output_words = decode(output_words,en_itos)
+                tgt_words = decode(tgt,en_itos)
+                bleu = corpus_bleu(list_of_references=tgt_words, 
+                                  hypotheses=output_words)
+                epoch_bleu += bleu
 
     return epoch_loss / n_batch, epoch_bleu / n_batch
 
