@@ -102,7 +102,7 @@ def run(epoch, best_loss):
     if not os.path.exists("{}result".format(save_path)):
         os.makedirs("{}result".format(save_path))
     total_start_time = time.time()
-    for step in enumerate(range(epoch)):
+    for step in range(epoch):
         start_time = time.time()
         train_loss = train(model, train_loader, optimizer, criterion, step+1)
         valid_loss, bleu = evaluate(model, valid_loader, criterion, step+1)
