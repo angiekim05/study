@@ -103,7 +103,7 @@ class EncoderLayer(nn.Module):
 5. position-wise fc feed-forward network
 6. add & norm
 
-### 2.2. ScaleDotProductAttention 코드
+### 2.2. DecoderLayer 코드
 ```python
 class DecoderLayer(nn.Module):
     def __init__(self, d_model, head, d_ff, dropout):
