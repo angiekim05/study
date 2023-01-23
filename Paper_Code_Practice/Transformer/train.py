@@ -42,14 +42,13 @@ def count_parameters(model):
 
 print('The model has {} trainable parameters'.format(count_parameters(model)))
 
-def train(model, data_source, optimizer, criterion):
+def train(model, data_source, optimizer, criterion, idx):
     model.train() # train mode
     epoch_loss = 0
     n_batch = len(data_source)
-    with tqdm(data_source, unit="batch") as epoch:
-        for i, batch in enumerate(epoch):
-            epoch.set_description(f"Epoch {i}")
-
+    with tqdm(data_source, unit="batch") as tepoch:
+        tepoch.set_description(f"Train Epoch {idx}")
+        for i, batch in enumerate(tepoch):
             src = batch[0].to(device)
             tgt = batch[1].to(device)
 
@@ -66,7 +65,7 @@ def train(model, data_source, optimizer, criterion):
             epoch_loss += loss.item()
 
             if i % log_interval == 0 and i > 0: # 0 이상의 interval 간격마다 loss 값 찍기
-                print('| step : {:3.1f} % | train_loss : {:5.5f} |'.format(i/n_batch*100, loss.item()))
+                print('| train_loss : {:5.5f} |'.format(loss.item()))
         
     return epoch_loss / n_batch
 
@@ -76,39 +75,37 @@ def evaluate(model, data_source, criterion):
     epoch_bleu = 0
     n_batch = len(data_source)
     with torch.no_grad():
-        with tqdm(data_source, unit="batch") as epoch:
-            for i, batch in enumerate(epoch):
-                epoch.set_description(f"Epoch {i}")
-                src = batch[0].to(device)
-                tgt = batch[1].to(device)
+        for i, batch in enumerate(data_source):
+            src = batch[0].to(device)
+            tgt = batch[1].to(device)
 
-                output = model(src,tgt[:,:-1])
-                output_reshape = output.contiguous().view(-1,output.size(-1)) # (-1,vocab_size)
-                tgt_reshape = tgt[:,1:].contiguous().view(-1)
+            output = model(src,tgt[:,:-1])
+            output_reshape = output.contiguous().view(-1,output.size(-1)) # (-1,vocab_size)
+            tgt_reshape = tgt[:,1:].contiguous().view(-1)
 
-                loss = criterion(output_reshape,tgt_reshape)
-                epoch_loss += loss.item()
+            loss = criterion(output_reshape,tgt_reshape)
+            epoch_loss += loss.item()
 
-                output_words = output.max(dim=-1)[1] # vocab 중 max 값의 index 가져오기
-                output_words = decode(output_words,en_itos)
-                tgt_words = decode(tgt,en_itos)
-                bleu = corpus_bleu(list_of_references=tgt_words, 
-                                  hypotheses=output_words)
-                epoch_bleu += bleu
+            output_words = output.max(dim=-1)[1] # vocab 중 max 값의 index 가져오기
+            output_words = decode(output_words,en_itos)
+            tgt_words = decode(tgt,en_itos)
+            bleu = corpus_bleu(list_of_references=tgt_words, 
+                              hypotheses=output_words)
+            epoch_bleu += bleu
 
     return epoch_loss / n_batch, epoch_bleu / n_batch
 
 def run(epoch, best_loss):
     train_losses, valid_losses, bleus = [], [], []
-    if not os.path.exists("saved"):
-        os.makedirs("saved")
-    if not os.path.exists("result"):
-        os.makedirs("result")
+    if not os.path.exists("{}saved".format(save_path)):
+        os.makedirs("{}saved".format(save_path))
+    if not os.path.exists("{}result".format(save_path)):
+        os.makedirs("{}result".format(save_path))
     total_start_time = time.time()
-    for step in range(epoch):
+    for step in enumerate(range(epoch)):
         start_time = time.time()
-        train_loss = train(model, train_loader, optimizer, criterion)
-        valid_loss, bleu = evaluate(model, valid_loader, criterion)
+        train_loss = train(model, train_loader, optimizer, criterion, step+1)
+        valid_loss, bleu = evaluate(model, valid_loader, criterion, step+1)
         end_time = time.time()
 
         scheduler.step()
@@ -122,17 +119,17 @@ def run(epoch, best_loss):
 
         if valid_loss < best_loss:
             best_loss = valid_loss
-            torch.save(model.state_dict(), 'saved/model-{}.pt'.format(valid_loss))
+            torch.save(model.state_dict(), '{0}saved/model-{1}.pt'.format(save_path,valid_loss))
             
-        f = open('result/train_loss.txt', 'w')
+        f = open('{}result/train_loss.txt'.format(save_path), 'w')
         f.write(str(train_losses))
         f.close()
 
-        f = open('result/bleu.txt', 'w')
+        f = open('{}result/bleu.txt'.format(save_path), 'w')
         f.write(str(bleus))
         f.close()
 
-        f = open('result/valid_loss.txt', 'w')
+        f = open('{}result/valid_loss.txt'.format(save_path), 'w')
         f.write(str(valid_losses))
         f.close()
 
