@@ -27,3 +27,6 @@ clip = 0.5
 log_interval = 50
 epoch = 1000
 inf = float('inf')
+
+# path to save model
+save_path = "/content/drive/MyDrive/test/"
