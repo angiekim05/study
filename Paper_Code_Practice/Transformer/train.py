@@ -40,7 +40,7 @@ criterion = nn.CrossEntropyLoss(ignore_index=padding_idx)
 def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
-print('The model has {} trainable parameters'.format(count_parameters(model)))
+print(f'The model has {count_parameters(model)} trainable parameters')
 
 def train(model, data_source, optimizer, criterion, idx):
     model.train() # train mode
@@ -65,7 +65,7 @@ def train(model, data_source, optimizer, criterion, idx):
             epoch_loss += loss.item()
 
             if i % log_interval == 0 and i > 0: # 0 이상의 interval 간격마다 loss 값 찍기
-                print('| train_loss : {:5.5f} |'.format(loss.item()))
+                print(f'| train_loss : {loss.item():5.5f} |')
         
     return epoch_loss / n_batch
 
@@ -97,15 +97,15 @@ def evaluate(model, data_source, criterion):
 
 def run(epoch, best_loss):
     train_losses, valid_losses, bleus = [], [], []
-    if not os.path.exists("{}saved".format(save_path)):
-        os.makedirs("{}saved".format(save_path))
-    if not os.path.exists("{}result".format(save_path)):
-        os.makedirs("{}result".format(save_path))
+    if not os.path.exists(f"{save_path}saved"):
+        os.makedirs(f"{save_path}saved")
+    if not os.path.exists(f"{save_path}result"):
+        os.makedirs(f"{save_path}result")
     total_start_time = time.time()
     for step in range(epoch):
         start_time = time.time()
         train_loss = train(model, train_loader, optimizer, criterion, step+1)
-        valid_loss, bleu = evaluate(model, valid_loader, criterion, step+1)
+        valid_loss, bleu = evaluate(model, valid_loader, criterion)
         end_time = time.time()
 
         scheduler.step()
@@ -119,17 +119,17 @@ def run(epoch, best_loss):
 
         if valid_loss < best_loss:
             best_loss = valid_loss
-            torch.save(model.state_dict(), '{0}saved/model-{1}.pt'.format(save_path,valid_loss))
+            torch.save(model.state_dict(), f'{save_path}saved/model-{valid_loss}.pt')
             
-        f = open('{}result/train_loss.txt'.format(save_path), 'w')
+        f = open(f'{save_path}result/train_loss.txt', 'w')
         f.write(str(train_losses))
         f.close()
 
-        f = open('{}result/bleu.txt'.format(save_path), 'w')
+        f = open(f'{save_path}result/bleu.txt', 'w')
         f.write(str(bleus))
         f.close()
 
-        f = open('{}result/valid_loss.txt'.format(save_path), 'w')
+        f = open(f'{save_path}result/valid_loss.txt', 'w')
         f.write(str(valid_losses))
         f.close()
 
