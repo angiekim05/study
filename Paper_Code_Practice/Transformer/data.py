@@ -12,6 +12,7 @@ print("Data preprocessing...")
 if not os.path.exists(f'{save_path}dataset'):
     os.makedirs(f'{save_path}dataset')
 if not os.listdir(f'{save_path}dataset'):
+    print("Data Tokenizing...")
     # train,test,valid = 76125,1603,792
     train_idx, train_src = tokenize_ko_sen("dataset/dataset/korean-english-park.train.ko") # max token length = 129
     valid_idx, valid_src = tokenize_ko_sen("dataset/dataset/korean-english-park.dev.ko") # max token length = 90
@@ -39,29 +40,31 @@ if not os.listdir(f'{save_path}dataset'):
     with open(f"{save_path}dataset/test_tgt.txt", "w") as f:
         for data in test_tgt:
             f.write(" ".join(data)+"\n")
+    print("Tokenization complete")
+    
 else:
     train_src = []
-    with open("/content/sample_data/train_src.txt", "r") as f:
+    with open(f"{save_path}dataset/train_src.txt", "r") as f:
         for data in f.readlines():
             train_src.append(data.strip().split())
     valid_src = []
-    with open("/content/sample_data/valid_src.txt", "r") as f:
+    with open(f"{save_path}dataset/valid_src.txt", "r") as f:
         for data in f.readlines():
             valid_src.append(data.strip().split())
     test_src = []
-    with open("/content/sample_data/test_src.txt", "r") as f:
+    with open(f"{save_path}dataset/test_src.txt", "r") as f:
         for data in f.readlines():
             test_src.append(data.strip().split())
     train_tgt = []
-    with open("/content/sample_data/train_tgt.txt", "r") as f:
+    with open(f"{save_path}dataset/train_tgt.txt", "r") as f:
         for data in f.readlines():
             train_tgt.append(data.strip().split())
     valid_tgt = []
-    with open("/content/sample_data/valid_tgt.txt", "r") as f:
+    with open(f"{save_path}dataset/valid_tgt.txt", "r") as f:
         for data in f.readlines():
             valid_tgt.append(data.strip().split())
     test_tgt = []
-    with open("/content/sample_data/test_tgt.txt", "r") as f:
+    with open(f"{save_path}dataset/test_tgt.txt", "r") as f:
         for data in f.readlines():
             test_tgt.append(data.strip().split())
 

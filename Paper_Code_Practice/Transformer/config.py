@@ -30,3 +30,6 @@ inf = float('inf')
 
 # path to save model
 save_path = "/content/drive/MyDrive/test/"
+# load model version
+# if retrain_version == "": train latest version (the smallest loss version)
+retrain_version = ""
