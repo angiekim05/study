@@ -38,14 +38,19 @@ def tokenize_ko_sen(data_path):
                 idxs.append(idx)
     return idxs, dataset
 
-def tokenize_en_sen(data_path, idxs):
+def tokenize_en_sen(data_path, idxs, src):
     with open(data_path) as f:
         dataset = []
         datas = f.readlines()
-        for idx in idxs:
-            x = normalizeString(datas[idx]).strip()
-            dataset.append(tokenizer_en(x))
-    return dataset
+        d = 0
+        for i in range(len(idxs)):
+            x = tokenizer_en(normalizeString(datas[idxs[i]]).strip())
+            if len(x) < 2:  # 한글은 긴 문장인데 반해 단어가 없는 영문장이 있음으로 제외
+                del src[i-d]
+                d += 1
+            else:
+                dataset.append(x)
+    return src, dataset
 
 # special token
 unk_token_idx = 0
