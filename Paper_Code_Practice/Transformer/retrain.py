@@ -85,8 +85,8 @@ def train(model, data_source, optimizer, criterion, idx):
 
             epoch_loss += loss.item()
 
-            # tqdm 으로 train loss 값 찍기
-            tepoch.set_postfix({'train_loss' : f'{loss.item():5.5f}'})
+            # tqdm 으로 minibatch의 train loss 값 찍기
+            tepoch.set_postfix({'minibatch_loss' : f'{loss.item():5.5f}'})
         
     return epoch_loss / n_batch
 
