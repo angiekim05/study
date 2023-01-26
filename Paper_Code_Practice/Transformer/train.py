@@ -46,9 +46,8 @@ def train(model, data_source, optimizer, criterion, idx):
     model.train() # train mode
     epoch_loss = 0
     n_batch = len(data_source)
-    with tqdm(data_source, unit="batch") as tepoch:
-        tepoch.set_description(f"Train Epoch {idx}")
-        for i, batch in enumerate(tepoch):
+    with tqdm(data_source, unit="batch", desc = f"Epoch {idx}") as tepoch:
+        for batch in tepoch:
             src = batch[0].to(device)
             tgt = batch[1].to(device)
 
@@ -64,8 +63,8 @@ def train(model, data_source, optimizer, criterion, idx):
 
             epoch_loss += loss.item()
 
-            if i % log_interval == 0 and i > 0: # 0 이상의 interval 간격마다 loss 값 찍기
-                print(f'| train_loss : {loss.item():5.5f} |')
+            # tqdm 으로 train loss 값 찍기
+            tepoch.set_postfix({'train_loss' : f'{loss.item():5.5f}'})
         
     return epoch_loss / n_batch
 
@@ -75,7 +74,7 @@ def evaluate(model, data_source, criterion):
     epoch_bleu = 0
     n_batch = len(data_source)
     with torch.no_grad():
-        for i, batch in enumerate(data_source):
+        for batch in data_source:
             src = batch[0].to(device)
             tgt = batch[1].to(device)
 
@@ -96,7 +95,6 @@ def evaluate(model, data_source, criterion):
     return epoch_loss / n_batch, epoch_bleu / n_batch
 
 def run(epoch, best_loss):
-    train_losses, valid_losses, bleus = [], [], []
     if not os.path.exists(f"{save_path}saved"):
         os.makedirs(f"{save_path}saved")
     if not os.path.exists(f"{save_path}result"):
@@ -110,33 +108,27 @@ def run(epoch, best_loss):
 
         scheduler.step()
 
-        train_losses.append(train_loss)
-        valid_losses.append(valid_loss)
-        bleus.append(bleu)
-
         epoch_mins, epoch_secs = divmod(end_time-start_time,60)
         total_mins, total_secs = divmod(end_time-total_start_time,60)
+        total_hours, total_mins = divmod(end_time-total_start_time,60)
+        
+        print(f'Epoch {step + 1} | Time: {int(total_hours)}h {int(total_mins)}m {total_secs:.2f}s | Epoch_Time: {int(epoch_mins)}m {epoch_secs:.2f}s | Train Loss: {train_loss:.5f} | Val Loss: {valid_loss:.5f} | BLEU Score: {bleu:.3f}')
+
+        with open(f'{save_path}result/train_loss.txt', 'a') as f:  
+            f.write(str(train_loss)+"\n")
+
+        with open(f'{save_path}result/bleu.txt', 'a') as f:
+            f.write(str(bleu)+"\n")
+
+        with open(f'{save_path}result/valid_loss.txt', 'a') as f:
+            f.write(str(valid_loss)+"\n")
 
         if valid_loss < best_loss:
             best_loss = valid_loss
-            torch.save(model.state_dict(), f'{save_path}saved/model-{valid_loss}.pt')
-            
-        f = open(f'{save_path}result/train_loss.txt', 'w')
-        f.write(str(train_losses))
-        f.close()
-
-        f = open(f'{save_path}result/bleu.txt', 'w')
-        f.write(str(bleus))
-        f.close()
-
-        f = open(f'{save_path}result/valid_loss.txt', 'w')
-        f.write(str(valid_losses))
-        f.close()
-
-        print(f'Epoch: {step + 1} | Time: {int(total_mins)}m {total_secs:.2f}s | Epoch_Time: {int(epoch_mins)}m {epoch_secs:.2f}s | Train Loss: {train_loss:.5f} | Val Loss: {valid_loss:.5f} | BLEU Score: {bleu:.3f}')
-    end_time = time.time()
-    epoch_mins, epoch_secs = divmod(end_time-total_start_time,60)
-    print(f'Time: {int(epoch_mins)}m {epoch_secs:.2f}s')
+            if overwrite:
+                torch.save(model.state_dict(), f'{save_path}saved/model.pt')
+            else:
+                torch.save(model.state_dict(), f'{save_path}saved/model-{valid_loss}.pt')
 
 if __name__ == '__main__':
     run(epoch,inf)
