@@ -13,7 +13,7 @@ from tqdm import tqdm
 def record(path):
     with open(path, 'r') as f:
         total_loss = f.readlines()
-        last_loss = total_loss[-1].strip()
+        last_loss = float(total_loss[-1].strip())
         last_epoch = len(total_loss)
     return last_loss, last_epoch
 
