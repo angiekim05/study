@@ -10,6 +10,15 @@ from util.scheduler import LRScheduler
 
 from tqdm import tqdm
 
+def record(path):
+    with open(path, 'r') as f:
+        total_loss = f.readlines()
+        last_loss = total_loss[-1].strip()
+        last_epoch = len(total_loss)
+    return last_loss, last_epoch
+
+last_loss, last_epoch = record(f'{save_path}result/valid_loss.txt')
+
 n_input_vocab = len(vocab_ko)
 n_output_vocab = len(vocab_en)
 
@@ -28,14 +37,13 @@ if retrain_version == "":
     try:
         latest_version = sorted(os.listdir(f'{save_path}saved'))[0]
         model.load_state_dict(torch.load(f'{save_path}saved/{latest_version}'))
-    except:
-        raise SystemExit('There is no saved model')
+    except Exception as e:
+        raise SystemExit(e)
 else:
     try:
         model.load_state_dict(torch.load(f'{save_path}saved/model-{retrain_version}.pt'))
-    except:
-        raise SystemExit('Can not find version')
-
+    except Exception as e:
+        raise SystemExit(e)
 
 optimizer = optim.Adam(params=model.parameters(),
                        lr=init_lr,
@@ -44,6 +52,7 @@ optimizer = optim.Adam(params=model.parameters(),
                        weight_decay=weight_decay)
 
 scheduler = LRScheduler(optimizer, d_model=d_model, warmup_steps=warmup_steps)
+scheduler.last_epoch = last_epoch # 이전 epoch 이후의 lr 적용을 위한 것
 
 # 기본적으로 많이 사용되는 스케줄러
 # scheduler = optim.lr_scheduler.StepLR(optimizer, 1.0, gamma=0.95)
@@ -59,9 +68,8 @@ def train(model, data_source, optimizer, criterion, idx):
     model.train() # train mode
     epoch_loss = 0
     n_batch = len(data_source)
-    with tqdm(data_source, unit="batch") as tepoch:
-        tepoch.set_description(f"Train Epoch {idx}")
-        for i, batch in enumerate(tepoch):
+    with tqdm(data_source, unit="batch", desc = f"Epoch {idx}") as tepoch:
+        for batch in tepoch:
             src = batch[0].to(device)
             tgt = batch[1].to(device)
 
@@ -77,8 +85,8 @@ def train(model, data_source, optimizer, criterion, idx):
 
             epoch_loss += loss.item()
 
-            if i % log_interval == 0 and i > 0: # 0 이상의 interval 간격마다 loss 값 찍기
-                print(f'| train_loss : {loss.item():5.5f} |')
+            # tqdm 으로 train loss 값 찍기
+            tepoch.set_postfix({'train_loss' : f'{loss.item():5.5f}'})
         
     return epoch_loss / n_batch
 
@@ -109,13 +117,12 @@ def evaluate(model, data_source, criterion):
     return epoch_loss / n_batch, epoch_bleu / n_batch
 
 def run(epoch, best_loss):
-    train_losses, valid_losses, bleus = [], [], []
     if not os.path.exists(f"{save_path}saved"):
         os.makedirs(f"{save_path}saved")
     if not os.path.exists(f"{save_path}result"):
         os.makedirs(f"{save_path}result")
     total_start_time = time.time()
-    for step in range(epoch):
+    for step in range(last_epoch, epoch):
         start_time = time.time()
         train_loss = train(model, train_loader, optimizer, criterion, step+1)
         valid_loss, bleu = evaluate(model, valid_loader, criterion)
@@ -123,33 +130,27 @@ def run(epoch, best_loss):
 
         scheduler.step()
 
-        train_losses.append(train_loss)
-        valid_losses.append(valid_loss)
-        bleus.append(bleu)
-
         epoch_mins, epoch_secs = divmod(end_time-start_time,60)
         total_mins, total_secs = divmod(end_time-total_start_time,60)
+        total_hours, total_mins = divmod(end_time-total_start_time,60)
+
+        print(f'Epoch {step + 1} | Time: {int(total_hours)}h {int(total_mins)}m {total_secs:.2f}s | Epoch_Time: {int(epoch_mins)}m {epoch_secs:.2f}s | Train Loss: {train_loss:.5f} | Val Loss: {valid_loss:.5f} | BLEU Score: {bleu:.3f}')
+
+        with open(f'{save_path}result/train_loss.txt', 'a') as f:  
+            f.write(str(train_loss)+"\n")
+
+        with open(f'{save_path}result/bleu.txt', 'a') as f:
+            f.write(str(bleu)+"\n")
+
+        with open(f'{save_path}result/valid_loss.txt', 'a') as f:
+            f.write(str(valid_loss)+"\n")
 
         if valid_loss < best_loss:
             best_loss = valid_loss
-            torch.save(model.state_dict(), f'{save_path}saved/model-{valid_loss}.pt')
-            
-        f = open(f'{save_path}result/train_loss.txt', 'w')
-        f.write(str(train_losses))
-        f.close()
-
-        f = open(f'{save_path}result/bleu.txt', 'w')
-        f.write(str(bleus))
-        f.close()
-
-        f = open(f'{save_path}result/valid_loss.txt', 'w')
-        f.write(str(valid_losses))
-        f.close()
-
-        print(f'Epoch: {step + 1} | Time: {int(total_mins)}m {total_secs:.2f}s | Epoch_Time: {int(epoch_mins)}m {epoch_secs:.2f}s | Train Loss: {train_loss:.5f} | Val Loss: {valid_loss:.5f} | BLEU Score: {bleu:.3f}')
-    end_time = time.time()
-    epoch_mins, epoch_secs = divmod(end_time-total_start_time,60)
-    print(f'Time: {int(epoch_mins)}m {epoch_secs:.2f}s')
+            if overwrite:
+                torch.save(model.state_dict(), f'{save_path}saved/model.pt')
+            else:
+                torch.save(model.state_dict(), f'{save_path}saved/model-{valid_loss}.pt')
 
 if __name__ == '__main__':
-    run(epoch,inf)
+    run(epoch,last_loss)

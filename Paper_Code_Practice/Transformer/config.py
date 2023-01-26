@@ -28,8 +28,14 @@ log_interval = 50
 epoch = 5000
 inf = float('inf')
 
-# path to save model
+# path to save model (google colab example)
 save_path = "/content/drive/MyDrive/test/"
+
 # load model version
 # if retrain_version == "": train latest version (the smallest loss version)
 retrain_version = ""
+
+# model overwrite : True / False
+# if True, the model will be saved as "model.pt"
+# if False, the model will be saved as "model-[valid_loss].pt"
+overwrite = True
