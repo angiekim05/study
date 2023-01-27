@@ -32,8 +32,8 @@ inf = float('inf')
 save_path = "/content/drive/MyDrive/test/"
 
 # load model version
-# if retrain_version == "": train latest version (the smallest loss version)
-retrain_version = ""
+# model_version == "" means latest version (the smallest valid loss version)
+model_version = ""
 
 # model overwrite : True / False
 # if True, the model will be saved as "model.pt"

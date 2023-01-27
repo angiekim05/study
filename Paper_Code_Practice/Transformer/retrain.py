@@ -33,7 +33,7 @@ model = Transformer(n_input_vocab=n_input_vocab,
                     padding_idx=padding_idx, 
                     device=device).to(device)
 # model load
-if retrain_version == "":
+if model_version == "":
     try:
         latest_version = sorted(os.listdir(f'{save_path}saved'))[0]
         model.load_state_dict(torch.load(f'{save_path}saved/{latest_version}'))
@@ -41,7 +41,7 @@ if retrain_version == "":
         raise SystemExit(e)
 else:
     try:
-        model.load_state_dict(torch.load(f'{save_path}saved/model-{retrain_version}.pt'))
+        model.load_state_dict(torch.load(f'{save_path}saved/model-{model_version}.pt'))
     except Exception as e:
         raise SystemExit(e)
 
