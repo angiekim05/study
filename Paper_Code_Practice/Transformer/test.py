@@ -6,15 +6,6 @@ from nltk.translate.bleu_score import corpus_bleu
 from data import *
 from model.transformer import Transformer
 
-def record(path):
-    with open(path, 'r') as f:
-        total_loss = f.readlines()
-        last_loss = float(total_loss[-1].strip())
-        last_epoch = len(total_loss)
-    return last_loss, last_epoch
-
-last_loss, last_epoch = record(f'{save_path}result/valid_loss.txt')
-
 n_input_vocab = len(vocab_ko)
 n_output_vocab = len(vocab_en)
 
