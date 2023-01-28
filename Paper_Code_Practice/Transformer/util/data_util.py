@@ -24,8 +24,8 @@ def normalizeString(s):
     s = re.sub(r'[^a-zA-Z0-9가-힣.!?]+' ,r' ',s)
     return s
 
-# tokenize
-def tokenize_ko_sen(data_path):
+# tokenize sentences in file
+def tokenize_ko_dataset(data_path):
     with open(data_path) as f:
         dataset = []
         idxs = []
@@ -38,7 +38,7 @@ def tokenize_ko_sen(data_path):
                 idxs.append(idx)
     return idxs, dataset
 
-def tokenize_en_sen(data_path, idxs, src):
+def tokenize_en_dataset(data_path, idxs, src):
     with open(data_path) as f:
         dataset = []
         datas = f.readlines()
@@ -51,6 +51,15 @@ def tokenize_en_sen(data_path, idxs, src):
             else:
                 dataset.append(x)
     return src, dataset
+
+# tokenize single sentence
+def tokenize_ko_sen(s):
+    data = tokenizer_ko(normalizeString(s).strip())
+    return data
+
+def tokenize_en_sen(s):
+    data = tokenizer_en(normalizeString(s).strip())
+    return data
 
 # special token
 unk_token_idx = 0
