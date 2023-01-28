@@ -15,12 +15,12 @@ if not os.listdir(f'{save_path}dataset'):
     from dataset.dataset_setup import *
     print("Data Tokenizing...")
     # train,test,valid = 76125,1603,792
-    train_idx, train_src = tokenize_ko_sen("dataset/dataset/korean-english-park.train.ko") # max token length = 129
-    valid_idx, valid_src = tokenize_ko_sen("dataset/dataset/korean-english-park.dev.ko") # max token length = 90
-    test_idx, test_src = tokenize_ko_sen("dataset/dataset/korean-english-park.test.ko") # max token length = 107
-    train_src, train_tgt = tokenize_en_sen("dataset/dataset/korean-english-park.train.en", train_idx, train_src) # max token length = 96
-    valid_src, valid_tgt = tokenize_en_sen("dataset/dataset/korean-english-park.dev.en", valid_idx, valid_src) # max token length = 71
-    test_src, test_tgt = tokenize_en_sen("dataset/dataset/korean-english-park.test.en", test_idx, test_src) # max token length = 74
+    train_idx, train_src = tokenize_ko_dataset("dataset/dataset/korean-english-park.train.ko") # max token length = 129
+    valid_idx, valid_src = tokenize_ko_dataset("dataset/dataset/korean-english-park.dev.ko") # max token length = 90
+    test_idx, test_src = tokenize_ko_dataset("dataset/dataset/korean-english-park.test.ko") # max token length = 107
+    train_src, train_tgt = tokenize_en_dataset("dataset/dataset/korean-english-park.train.en", train_idx, train_src) # max token length = 96
+    valid_src, valid_tgt = tokenize_en_dataset("dataset/dataset/korean-english-park.dev.en", valid_idx, valid_src) # max token length = 71
+    test_src, test_tgt = tokenize_en_dataset("dataset/dataset/korean-english-park.test.en", test_idx, test_src) # max token length = 74
 
     # data save
     with open(f"{save_path}dataset/train_src.txt", "w") as f:

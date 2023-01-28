@@ -15,7 +15,7 @@ max_len = 150  # 최대 seq 길이로 PE 초기 크기 설정에 쓰임
 padding_idx = 1
 
 # optimizer parameter
-init_lr = 1
+init_lr = 0.5
 beta1 = 0.9
 beta2 = 0.98
 eps = 1e-9
