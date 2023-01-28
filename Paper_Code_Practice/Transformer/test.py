@@ -1,14 +1,10 @@
 import torch
-from torch import nn, optim
+from torch import nn
 
-import time
 from nltk.translate.bleu_score import corpus_bleu
 
 from data import *
 from model.transformer import Transformer
-from util.scheduler import LRScheduler
-
-from tqdm import tqdm
 
 def record(path):
     with open(path, 'r') as f:
@@ -51,6 +47,7 @@ def test(model, data_source, criterion):
     model.eval() # evaluation mode (deactivate dropout)
     epoch_loss = 0
     epoch_bleu = 0
+    epoch_bleu_1 = 0
     n_batch = len(data_source)
     with torch.no_grad():
         for batch in data_source:
@@ -69,9 +66,13 @@ def test(model, data_source, criterion):
             tgt_words = decode(tgt,en_itos)
             bleu = corpus_bleu(list_of_references=tgt_words, 
                               hypotheses=output_words)
+            bleu_1 = corpus_bleu(list_of_references=tgt_words, 
+                              hypotheses=output_words,
+                              weights=(1,0,0,0))
             epoch_bleu += bleu
+            epoch_bleu_1 += bleu_1
     
-    print(f"| Test Loss: {epoch_loss / n_batch:.5f} | BLEU Score: {epoch_bleu / n_batch:.3f} |") 
+    print(f"Test Loss: {epoch_loss / n_batch:.5f}| BLEU Score: {epoch_bleu / n_batch * 100:.3f} | BLEU 1_gram Score: {epoch_bleu_1 / n_batch * 100:.3f} ") 
 
 if __name__ == '__main__':
     test(model, test_loader, criterion)

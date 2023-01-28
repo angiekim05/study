@@ -148,11 +148,11 @@ def run(epoch, best_loss):
             if overwrite:
                 torch.save(model.state_dict(), f'{save_path}saved/model.pt')
                 with open(f'{save_path}saved/saved_info.txt', 'w') as f:
-                    f.write(f"Epoch {step + 1} | Val Loss: {valid_loss:.5f} | Train Loss: {train_loss:.5f} | BLEU Score: {bleu:.3f}"+"\n")
+                    f.write(f"Epoch {step + 1} | Val Loss: {valid_loss:.5f} | Train Loss: {train_loss:.5f} | BLEU Score: {bleu*100:.3f}"+"\n")
             else:
                 torch.save(model.state_dict(), f'{save_path}saved/model-{valid_loss}.pt')
 
-        print(f'Epoch {step + 1} | Time: {int(total_hours):3}h {int(total_mins):02}m {total_secs:02.2f}s | Epoch_Time: {int(epoch_mins)}m {epoch_secs:.2f}s | Train Loss: {train_loss:.5f} | Val Loss: {valid_loss:.5f} | BLEU Score: {bleu:.3f}')
+        print(f'Epoch {step + 1} | Time: {int(total_hours):3}h {int(total_mins):02}m {total_secs:02.2f}s | Epoch_Time: {int(epoch_mins)}m {epoch_secs:.2f}s | Train Loss: {train_loss:.5f} | Val Loss: {valid_loss:.5f} | BLEU Score: {bleu*100:.3f}')
 
 if __name__ == '__main__':
     run(epoch,last_loss)
