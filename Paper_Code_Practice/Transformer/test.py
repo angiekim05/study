@@ -63,7 +63,7 @@ def test(model, data_source, criterion):
             epoch_bleu += bleu
             epoch_bleu_1 += bleu_1
     
-    print(f"Test Loss: {epoch_loss / n_batch:.5f}| BLEU Score: {epoch_bleu / n_batch * 100:.3f} | BLEU 1_gram Score: {epoch_bleu_1 / n_batch * 100:.3f} ") 
+    print(f"Test Loss: {epoch_loss / n_batch:.5f}| BLEU Score: {epoch_bleu / n_batch * 100:.3f} | BLEU 1_gram Score: {epoch_bleu_1 / n_batch * 100:2.3f} ") 
 
 if __name__ == '__main__':
     test(model, test_loader, criterion)
