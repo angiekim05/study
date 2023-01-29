@@ -30,7 +30,6 @@ else:
     except Exception as e:
         raise SystemExit(e)
 
-s = "안녕하세요 만나서 반가워요"
 def get_src(s):
     src = encode([tokenize_ko_sen(s)],ko_stoi)
     return torch.tensor(src)
@@ -60,7 +59,7 @@ def predict(model):
             last_word = output[:,-1:,:].max(dim=-1)[1]
 
             # eos token을 만나면 끝냄
-            if torch.equal(last_word, torch.tensor([[eos_token_idx]])):
+            if torch.equal(last_word, torch.tensor([[eos_token_idx]]).to(device)):
                 break
 
             # next tgt
