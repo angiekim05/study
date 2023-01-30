@@ -10,11 +10,18 @@ from util.scheduler import LRScheduler
 
 from tqdm import tqdm
 
-def record(path):
-    with open(path, 'r') as f:
-        total_loss = [float(x) for x in f.readlines()]
-        last_loss = min(total_loss)
-        last_epoch = len(total_loss)
+def record(save_path):
+    if overwrite:
+        with open(f'{save_path}saved/saved_info.txt') as f:
+            results = f.readline().split('|')
+            _, last_epoch = results[0].split()
+            _, last_loss = results[1].split(":")
+            last_epoch, last_loss = int(last_epoch.strip()), float(last_loss.strip())
+    else:
+        with open(f'{save_path}result/valid_loss.txt', 'r') as f:
+            total_loss = [float(x) for x in f.readlines()]
+            last_loss = min(total_loss)
+            last_epoch = len(total_loss)
     return last_loss, last_epoch
 
 last_loss, last_epoch = record(f'{save_path}result/valid_loss.txt')
