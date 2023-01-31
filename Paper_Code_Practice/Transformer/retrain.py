@@ -17,14 +17,19 @@ def record(save_path):
             _, last_epoch = results[0].split()
             _, last_loss = results[1].split(":")
             last_epoch, last_loss = int(last_epoch.strip()), float(last_loss.strip())
-    else:
+    elif model_version != "":
         with open(f'{save_path}result/valid_loss.txt', 'r') as f:
             total_loss = [float(x) for x in f.readlines()]
             last_loss = min(total_loss)
             last_epoch = len(total_loss)
+    else:
+        with open(f'{save_path}result/valid_loss.txt', 'r') as f:
+            total_loss = [float(x) for x in f.readlines()]
+            last_loss = float(model_version)
+            last_epoch = total_loss.index(last_loss)+1
     return last_loss, last_epoch
 
-last_loss, last_epoch = record(f'{save_path}result/valid_loss.txt')
+last_loss, last_epoch = record(save_path)
 
 n_input_vocab = len(vocab_ko)
 n_output_vocab = len(vocab_en)
