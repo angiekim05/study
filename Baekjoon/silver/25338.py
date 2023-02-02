@@ -23,3 +23,24 @@ for _ in range(n):
     ans += f.fit(u,v)
 
 print(ans)
+
+#-----------------------------
+
+import sys
+input = sys.stdin.readline
+
+a,b,c,d = map(int, input().split())
+
+def fit(u, x):
+    fx = max(a * (x - b)**2 + c, d)
+    if fx != u or b > x:
+        return 0
+    return 1
+    
+n = int(input())
+ans = 0
+for _ in range(n):
+    u,v = map(int, input().split())
+    ans += fit(u,v)
+
+print(ans)
