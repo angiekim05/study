@@ -36,5 +36,5 @@ model_version = ""
 
 # model overwrite : True / False
 # if True, the model will be saved as "model.pt"
-# if False, the model will be saved as "model-[valid_loss].pt"
+# if False, the model will be saved as "model_[valid_loss].pt"
 overwrite = True
