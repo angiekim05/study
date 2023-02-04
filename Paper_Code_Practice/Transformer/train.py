@@ -32,9 +32,6 @@ optimizer = optim.Adam(params=model.parameters(),
 
 scheduler = LRScheduler(optimizer, d_model=d_model, warmup_steps=warmup_steps)
 
-# 기본적으로 많이 사용되는 스케줄러
-# scheduler = optim.lr_scheduler.StepLR(optimizer, 1.0, gamma=0.95)
-
 criterion = nn.CrossEntropyLoss(ignore_index=padding_idx)
 
 def count_parameters(model):
@@ -99,7 +96,9 @@ def run(epoch, best_loss):
         os.makedirs(f"{save_path}saved")
     if not os.path.exists(f"{save_path}result"):
         os.makedirs(f"{save_path}result")
+
     total_start_time = time.time()
+    train_loss_list, valid_loss_list, bleu_list = [], [], []
     for step in range(epoch):
         start_time = time.time()
         train_loss = train(model, train_loader, optimizer, criterion, step+1)
@@ -110,27 +109,31 @@ def run(epoch, best_loss):
 
         epoch_mins, epoch_secs = divmod(end_time-start_time,60)
         total_mins, total_secs = divmod(end_time-total_start_time,60)
-        total_hours, total_mins = divmod(total_mins,60)
+        total_hours, total_mins = divmod(total_mins,60)       
+        
+        train_loss_list.append(train_loss)
+        valid_loss_list.append(valid_loss)
+        bleu_list.append(bleu)
 
-        with open(f'{save_path}result/train_loss.txt', 'a') as f:  
-            f.write(str(train_loss)+"\n")
+        with open(f'{save_path}result/train_loss.txt', 'w') as f:  
+            f.write(str(train_loss_list))
 
-        with open(f'{save_path}result/bleu.txt', 'a') as f:
-            f.write(str(bleu)+"\n")
+        with open(f'{save_path}result/bleu.txt', 'w') as f:
+            f.write(str(bleu_list))
 
-        with open(f'{save_path}result/valid_loss.txt', 'a') as f:
-            f.write(str(valid_loss)+"\n")
+        with open(f'{save_path}result/valid_loss.txt', 'w') as f:
+            f.write(str(valid_loss_list))
 
         if valid_loss < best_loss:
             best_loss = valid_loss
             if overwrite:
                 torch.save(model.state_dict(), f'{save_path}saved/model.pt')
                 with open(f'{save_path}saved/saved_info.txt', 'w') as f:
-                    f.write(f"Epoch {step + 1} | Val Loss: {valid_loss:.5f} | Train Loss: {train_loss:.5f} | BLEU Score: {bleu*100:2.3f}"+"\n")
+                    f.write(f"Epoch {step + 1:4} | Val Loss: {valid_loss:.5f} | Train Loss: {train_loss:.5f} | BLEU Score: {bleu*100:2.3f}"+"\n")
             else:
-                torch.save(model.state_dict(), f'{save_path}saved/model-{valid_loss}.pt')
+                torch.save(model.state_dict(), f'{save_path}saved/model_{valid_loss:.5f}.pt')
 
-        print(f'Epoch {step + 1} | Time: {int(total_hours):3}h {int(total_mins):02}m {total_secs:02.2f}s | Epoch_Time: {int(epoch_mins)}m {epoch_secs:.2f}s | Train Loss: {train_loss:.5f} | Val Loss: {valid_loss:.5f} | BLEU Score: {bleu*100:2.3f}')
+        print(f'Epoch {step + 1:4} | Time: {int(total_hours):3}h {int(total_mins):02}m {total_secs:02.2f}s | Epoch_Time: {int(epoch_mins)}m {epoch_secs:.2f}s | Train Loss: {train_loss:.5f} | Val Loss: {valid_loss:.5f} | BLEU Score: {bleu*100:2.3f}')
 
 if __name__ == '__main__':
     run(epoch,inf)
