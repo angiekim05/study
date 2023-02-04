@@ -10,26 +10,37 @@ from util.scheduler import LRScheduler
 
 from tqdm import tqdm
 
-def record(save_path):
+def records(path,epoch=-1):
+    with open(path, 'r') as f:
+        results = f.readline().split(", ")
+        results[0] = results[0][1:]
+        results[-1] = results[-1][:-1]
+        results = list(map(float,results[:epoch]))
+    return results
+        
+def record_v(save_path):
+    valid_list = records(f'{save_path}saved/valid_loss.txt')
     if overwrite:
         with open(f'{save_path}saved/saved_info.txt') as f:
             results = f.readline().split('|')
-            _, last_epoch = results[0].split()
-            _, last_loss = results[1].split(":")
-            last_epoch, last_loss = int(last_epoch.strip()), float(last_loss.strip())
+            last_epoch = int(results[0].split()[-1])
+            valid_list = valid_list[:last_epoch]
+            last_loss = results[-1]
     elif model_version != "":
-        with open(f'{save_path}result/valid_loss.txt', 'r') as f:
-            total_loss = [float(x) for x in f.readlines()]
-            last_loss = min(total_loss)
-            last_epoch = len(total_loss)
+        last_loss, last_epoch = results[-1], len(results)
     else:
-        with open(f'{save_path}result/valid_loss.txt', 'r') as f:
-            total_loss = [float(x) for x in f.readlines()]
-            last_loss = float(model_version)
-            last_epoch = total_loss.index(last_loss)+1
-    return last_loss, last_epoch
+        last_loss = float(model_version)
+        last_epoch = valid_list.index(last_loss)+1
+    return valid_list, last_loss, last_epoch
 
-last_loss, last_epoch = record(save_path)
+if not os.path.exists(f"{save_path}saved"):
+    raise SystemExit(f"No such directory: {save_path}saved")
+if not os.path.exists(f"{save_path}result"):
+    raise SystemExit(f"No such directory: {save_path}result")
+
+valid_loss_list, last_loss, last_epoch = record_v(save_path)
+train_loss_list = records(f'{save_path}saved/train_loss.txt',last_epoch)
+bleu_list = records(f'{save_path}saved/bleu.txt',last_epoch)
 
 n_input_vocab = len(vocab_ko)
 n_output_vocab = len(vocab_en)
@@ -53,7 +64,7 @@ if model_version == "":
         raise SystemExit(e)
 else:
     try:
-        model.load_state_dict(torch.load(f'{save_path}saved/model-{model_version}.pt'))
+        model.load_state_dict(torch.load(f'{save_path}saved/model_{model_version}.pt'))
     except Exception as e:
         raise SystemExit(e)
 
@@ -64,10 +75,7 @@ optimizer = optim.Adam(params=model.parameters(),
                        weight_decay=weight_decay)
 
 scheduler = LRScheduler(optimizer, d_model=d_model, warmup_steps=warmup_steps)
-scheduler.last_epoch = last_epoch # 이전 epoch 이후의 lr 적용을 위한 것
-
-# 기본적으로 많이 사용되는 스케줄러
-# scheduler = optim.lr_scheduler.StepLR(optimizer, 1.0, gamma=0.95)
+scheduler.last_epoch = last_epoch
 
 criterion = nn.CrossEntropyLoss(ignore_index=padding_idx)
 
@@ -129,10 +137,6 @@ def evaluate(model, data_source, criterion):
     return epoch_loss / n_batch, epoch_bleu / n_batch
 
 def run(epoch, best_loss):
-    if not os.path.exists(f"{save_path}saved"):
-        os.makedirs(f"{save_path}saved")
-    if not os.path.exists(f"{save_path}result"):
-        os.makedirs(f"{save_path}result")
     total_start_time = time.time()
     for step in range(last_epoch, epoch):
         start_time = time.time()
@@ -146,25 +150,29 @@ def run(epoch, best_loss):
         total_mins, total_secs = divmod(end_time-total_start_time,60)
         total_hours, total_mins = divmod(total_mins,60)
 
-        with open(f'{save_path}result/train_loss.txt', 'a') as f:  
-            f.write(str(train_loss)+"\n")
+        train_loss_list.append(train_loss)
+        valid_loss_list.append(valid_loss)
+        bleu_list.append(bleu)
 
-        with open(f'{save_path}result/bleu.txt', 'a') as f:
-            f.write(str(bleu)+"\n")
+        with open(f'{save_path}result/train_loss.txt', 'w') as f:  
+            f.write(str(train_loss_list))
 
-        with open(f'{save_path}result/valid_loss.txt', 'a') as f:
-            f.write(str(valid_loss)+"\n")
+        with open(f'{save_path}result/bleu.txt', 'w') as f:
+            f.write(str(bleu_list))
+
+        with open(f'{save_path}result/valid_loss.txt', 'w') as f:
+            f.write(str(valid_loss_list))
 
         if valid_loss < best_loss:
             best_loss = valid_loss
             if overwrite:
                 torch.save(model.state_dict(), f'{save_path}saved/model.pt')
                 with open(f'{save_path}saved/saved_info.txt', 'w') as f:
-                    f.write(f"Epoch {step + 1} | Val Loss: {valid_loss:.5f} | Train Loss: {train_loss:.5f} | BLEU Score: {bleu*100:2.3f}"+"\n")
+                    f.write(f"Epoch {step + 1:4} | Val Loss: {valid_loss:.5f} | Train Loss: {train_loss:.5f} | BLEU Score: {bleu*100:2.3f}"+"\n")
             else:
-                torch.save(model.state_dict(), f'{save_path}saved/model-{valid_loss}.pt')
+                torch.save(model.state_dict(), f'{save_path}saved/model_{valid_loss:.5f}.pt')
 
-        print(f'Epoch {step + 1} | Time: {int(total_hours):3}h {int(total_mins):02}m {total_secs:02.2f}s | Epoch_Time: {int(epoch_mins)}m {epoch_secs:.2f}s | Train Loss: {train_loss:.5f} | Val Loss: {valid_loss:.5f} | BLEU Score: {bleu*100:2.3f}')
+        print(f'Epoch {step + 1:4} | Time: {int(total_hours):3}h {int(total_mins):02}m {total_secs:02.2f}s | Epoch_Time: {int(epoch_mins)}m {epoch_secs:.2f}s | Train Loss: {train_loss:.5f} | Val Loss: {valid_loss:.5f} | BLEU Score: {bleu*100:2.3f}')
 
 if __name__ == '__main__':
     run(epoch,last_loss)
