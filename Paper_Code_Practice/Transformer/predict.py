@@ -17,18 +17,6 @@ model = Transformer(n_input_vocab=n_input_vocab,
                     max_len=max_len, 
                     padding_idx=padding_idx, 
                     device=device).to(device)
-# model load
-if model_version == "":
-    try:
-        latest_version = sorted(os.listdir(f'{save_path}saved'))[0]
-        model.load_state_dict(torch.load(f'{save_path}saved/{latest_version}'))
-    except Exception as e:
-        raise SystemExit(e)
-else:
-    try:
-        model.load_state_dict(torch.load(f'{save_path}saved/model-{model_version}.pt'))
-    except Exception as e:
-        raise SystemExit(e)
 
 def get_src(s):
     src = encode([tokenize_ko_sen(s)],ko_stoi)
@@ -37,18 +25,7 @@ def get_init_tgt():
     tgt = [[sos_token_idx]]
     return torch.tensor(tgt)
 
-def predict(model):
-    # input 받기
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--input", 
-        default="안녕", 
-        type=str, 
-        help="Korean setence that you want to translate"
-    )
-    args = parser.parse_args()
-    input = args.input
-
+def predict(model, input):
     src = get_src(input).to(device)
     tgt = get_init_tgt().to(device)
 
@@ -73,4 +50,34 @@ def predict(model):
         print("Output:", output)
 
 if __name__ == '__main__':
-    predict(model)
+    # arguments 받기
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--input", 
+        default="안녕", 
+        type=str, 
+        help="Korean setence that you want to translate"
+    )
+    parser.add_argument(
+        "--model", 
+        default="", 
+        type=str, 
+        help="Model version: default means the latest version (the smallest valid loss version)"
+    )
+    args = parser.parse_args()
+    model_version = args.model
+
+    # model load
+    if model_version == "":
+        try:
+            latest_version = sorted(os.listdir(f'{save_path}saved'))[0]
+            model.load_state_dict(torch.load(f'{save_path}saved/{latest_version}'))
+        except Exception as e:
+            raise SystemExit(e)
+    else:
+        try:
+            model.load_state_dict(torch.load(f'{save_path}saved/model_{model_version}.pt'))
+        except Exception as e:
+            raise SystemExit(e)
+
+    predict(model, args.input)
