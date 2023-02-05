@@ -2,13 +2,13 @@ import os
 from config import *
 
 from torchtext.vocab import build_vocab_from_iterator
-
-from util.data_util import *
 from torch.utils.data import DataLoader
 
 import time
 start_time = time.time()
 print("Data preprocessing...")
+from util.data_util import *
+
 if not os.path.exists(f'{save_path}dataset'):
     os.makedirs(f'{save_path}dataset')
 if not os.listdir(f'{save_path}dataset'):

@@ -70,7 +70,11 @@ if __name__ == '__main__':
     # model load
     if model_version == "":
         try:
-            latest_version = sorted(os.listdir(f'{save_path}saved'))[0]
+            latest_version = sorted(os.listdir(f'{save_path}saved'))
+            for version in latest_version:
+                if version[-3:] == ".pt":
+                    latest_version = version
+                    break
             model.load_state_dict(torch.load(f'{save_path}saved/{latest_version}'))
         except Exception as e:
             raise SystemExit(e)
