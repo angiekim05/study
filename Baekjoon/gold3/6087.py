@@ -18,28 +18,28 @@ def sol(start,end):
     i,j=start
     visited[i][j]=[1,1,1,1]
     q = []
-    heappush(q,(1,i,j,0,1))
-    heappush(q,(1,i,j,1,0))
-    heappush(q,(1,i,j,0,-1))
-    heappush(q,(1,i,j,-1,0))
+    heappush(q,(1,i,j,0))
+    heappush(q,(1,i,j,1))
+    heappush(q,(1,i,j,2))
+    heappush(q,(1,i,j,3))
     while q:
-        t,x,y,dx,dy = heappop(q)
+        t,x,y,dir = heappop(q)
+        if (x,y) == end:
+            continue
         for ii in range(4):
-            nx,ny = (x + d[ii][0] , y + d[ii][1])
+            nx,ny = x + d[ii][0] , y + d[ii][1]
             if nx >= n or 0 > nx or ny >= m or 0 > ny:
                 continue
-            if gido[nx][ny] == '*':
-                continue
-            if (-dx,-dy) == d[ii]:
+            if gido[nx][ny] == '*' or (dir+2)%4 == ii:
                 continue
             if visited[nx][ny][ii] <= t: 
                 continue
-            elif (dx,dy) == d[ii]:
-                q.append((t,nx,ny,d[ii][0],d[ii][1]))
+            if dir == ii:
+                q.append((t,nx,ny,ii))
                 visited[nx][ny][ii] = min(t,visited[nx][ny][ii])
             else:
-                q.append((t+1,nx,ny,d[ii][0],d[ii][1]))
+                q.append((t+1,nx,ny,ii))
                 visited[nx][ny][ii] = min(t+1,visited[nx][ny][ii])
-    return visited
+    return visited[end[0]][end[1]]
 ans = sol(*c)
-print(min(ans[c[1][0]][c[1][1]])-1)
+print(min(ans)-1)
