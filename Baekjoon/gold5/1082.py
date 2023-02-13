@@ -32,6 +32,7 @@ if m > 0:
             m -= p[i] - p[0]
             numbs[0] -= 1
             numbs[i] += 1
+            
 ans = ""
 for i in range(n-1,-1,-1):
     while numbs[i]:
