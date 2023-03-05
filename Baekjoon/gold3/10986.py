@@ -13,6 +13,6 @@ for i in range(n):
 ans = dp[0] # 나머지가 0이 되는 경우의 수
 for i in range(m):
     # 같은 크기의 나머지가 되는 prefixSum을 빼서 
-    # 나머지가 0이 되는 조합(nC2)을 구해서 더함
+    # 나머지가 0이 되는 조합(nC2)을 구해서 더함 
     ans += dp[i] * (dp[i]-1) // 2
 print(ans)
