@@ -3,7 +3,7 @@ Transformer 모델은 자연어 처리에서 가장 기본이 되고 있기 때�
 코드는 hyunwoongko님 깃허브 자료의 도움을 받았으며, Transformer 모델 구현부터 한영 번역 학습까지 진행하였다.   
 model 폴더 안에 논문의 구성 요소들을 바탕으로 공부한 내용과 코드를 README.md 파일로 리뷰해보았다.  
 
-- Date : 12월 9일 ~ 1월 15일
+- Date : 2022년 12월 9일 ~ 2023년 1월 15일
 - Paper: Attention Is All You Need
 ---
 - colab 에서 다음과 같이 시도해볼 수 있다.
