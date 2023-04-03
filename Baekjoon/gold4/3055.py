@@ -10,7 +10,7 @@ for i in range(r):
     arr.append(temp)
     for j in range(c):
         if temp[j] == "S":
-            s = (i,j)
+            s = (i,j) 
         elif temp[j] == "*":
             water.append((i,j))
 
