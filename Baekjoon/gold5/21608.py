@@ -1,3 +1,5 @@
+# 빈칸을 셀때, 빈칸이 전혀 없는 경우도 고려해줘야함..
+
 import sys
 input = sys.stdin.readline
 
@@ -50,7 +52,7 @@ for idx in range(1, n**2):
         # 친구수 기준으로 정렬
         maxs = sorted(candi.items(), key= lambda k: [-k[1]])
         max_ = maxs[0][1]
-        
+
         # 친구수가 동일한 후보군이 있는지 확인
         for i in range(1,1+len(maxs)):
             if maxs[i-1][1] < max_:
@@ -87,7 +89,7 @@ for idx in range(1, n**2):
                         elif cnt > max_:
                             max_ = cnt
                             max_pos = (i,j)
-                        elif not max_pos: #아직 위치정보가 없다면
+                        elif not max_pos: #아직 위치정보가 없다면 (cnt가 0일 때)
                             max_pos = (i,j)
             return max_pos
         i,j = find()
