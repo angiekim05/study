@@ -71,4 +71,5 @@ while True:
     
     # 시간 추가
     t += 1
+    
 print(t)
