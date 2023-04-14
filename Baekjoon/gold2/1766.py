@@ -7,6 +7,7 @@ n,m = map(int, input().split())
 in_ = [0]*(n+1) # 진입차수
 tree = defaultdict(list) # 트리
 for i in range(m):
+    # a가 b보다 먼저 풀어야 하는 문제!! 즉 상위노드라고 할 수 있음
     a,b = map(int, input().split())
     tree[a].append(b)
     in_[b] += 1 # 진입차수 증가
