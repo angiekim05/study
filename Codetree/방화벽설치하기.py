@@ -26,7 +26,7 @@ def bfs():
     fireq = deque(fire) # bfs를 위해 deque 사용
     visited = [[0]*m for _ in range(n)]
     while fireq:
-        x,y = fireq.pop()
+        x,y = fireq.popleft()
         for dx, dy in dxdy:
             nx, ny = x + dx, y + dy
             if 0 > nx or nx >= n or 0 > ny or ny >= m:
