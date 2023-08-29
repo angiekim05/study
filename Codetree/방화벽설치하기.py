@@ -20,7 +20,7 @@ for i in range(n):
         elif arr[i][j] == 2:
             fire.append((i,j)) # 불 위치 추가
 
-# 불이 퍼지는 함수
+# 불이 퍼지는 함수 bfs dfs 상관 없음
 def bfs():
     non_fire = len(empty) - 3 # 세워질 벽 개수 제외한 공백 수
     fireq = deque(fire) # bfs를 위해 deque 사용
